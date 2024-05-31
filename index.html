@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monster Mayhem</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <p id = "player_name"></p>
+    <div id="legend" class="legend">
+        <div class="legend-item"><span class="player1"></span>Player 1</div>
+        <div class="legend-item"><span class="player2"></span>Player 2</div>
+        <div class="legend-item"><span class="player3"></span>Player 3</div>
+        <div class="legend-item"><span class="player4"></span>Player 4</div>
+        <div class="legend-item"><span class="vampire">V</span>Vampire</div>
+        <div class="legend-item"><span class="werewolf">W</span>Werewolf</div>
+        <div class="legend-item"><span class="ghost">G</span>Ghost</div>
+    </div>
+    <table id="board" class="board"></table>
+	<div id = "game_info"><button id="join-game-btn" onclick="joinGame()">Join Game</button></div>
+    <script src="game_logic.js"></script>
+</body>
+</html>
