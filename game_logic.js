@@ -259,3 +259,15 @@ connection.onmessage = function (evt) {
     }
 }
 
+function joinGame() {
+    if (game) {
+        alert("You are already in game!");
+        return;
+    }
+    var gameid = prompt("Enter game ID:");
+    connection.send(JSON.stringify({ type: "joingame", gameid: gameid }));
+}
+
+function endTurn() {
+    connection.send(JSON.stringify({ type: "endturn" }));
+}
