@@ -14,6 +14,7 @@ server.listen(3000, () => {
     console.log("Server running on port 3000");
     serverclass = new Server();
 });
+//shuffle function used for turn order between players
 function shuffle(array) {
     var newarray = array;
     let currentIndex = array.length;
@@ -37,6 +38,7 @@ class Server {
         this.games = {};
     }
 }
+//class for managing each game
 class Game {
     constructor(gameid, player) {
         this.gameid = gameid;
@@ -50,6 +52,8 @@ class Game {
         this.monsterplacedthisturn = false;
         this.lifesleft = [1, 1, 1, 1];
     }
+
+    //method for adding a player to the game
     PlayerJoin(player) {
         var thisgame = this;
         wss.clients.forEach(function (connection) { if (thisgame.players.includes(connection.playername)) connection.send(JSON.stringify({ type: "playerjoined", playername: player })); });
@@ -58,12 +62,14 @@ class Game {
             this.StartGame();
         }
     }
+    //method for starting the game
     StartGame() {
         var thisgame = this;
         this.gamestarted = true;
         this.turnqueue = shuffle([...this.players]);
         wss.clients.forEach(function (connection) { if (thisgame.players.includes(connection.playername)) connection.send(JSON.stringify({ type: "startgame", turnqueue: thisgame.turnqueue, whosturn: thisgame.whosturn })); });
     }
+    //method for ending the turn
     EndTurn() {
         console.log("end turn!");
         if (this.whosturn == this.turnqueue.length - 1) {
@@ -80,6 +86,7 @@ class Game {
         this.monsterplacedthisturn = false;
         wss.clients.forEach(function (connection) { if (thisgame.players.includes(connection.playername)) connection.send(JSON.stringify({ type: "nextturn", whosturn: thisgame.whosturn })); });
     }
+    //method for ending the round
     EndRound() {
         this.monsterplacedthisturn = false;
         var thisgame = this;
@@ -92,7 +99,7 @@ class Game {
     }
 }
 
-
+//monster class for managing each monster
 class Monster {
     constructor(gameid, player, pos, type) {
         this.gameid = gameid;
@@ -102,6 +109,7 @@ class Monster {
         this.monstertype = type;
         serverclass.games[gameid].monsterplacedthisturn = true;
     }
+    //method for moving the monster to new position depending on the monsters
     Move(topos) {
         console.log("move");
         var thisgame = serverclass.games[this.gameid];
@@ -156,8 +164,10 @@ class Monster {
                 return;
             }
         }
+///sending the move to all players
         wss.clients.forEach(function (connection) { if (thisgame.players.includes(connection.playername)) connection.send(JSON.stringify({ type: "move", monsterpos: thismonster.pos, topos: topos })); });
         this.pos = topos;
+        //function for checking the eliminations
         function CheckEliminations() {
             thisgame.players.forEach((player, index) => {
                 console.log(thisgame.lifesleft[index]);
@@ -182,6 +192,7 @@ class Monster {
         }
     }
 }
+//websocket connection
 wss.on('connection', (connection, info) => {
     if (Array.from(wss.clients).find(connection => connection.playername == info.url.split("?name=")[1])) {
         connection.send(JSON.stringify({ type: "usedname" }));

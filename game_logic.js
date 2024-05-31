@@ -1,9 +1,13 @@
+
 var board = document.getElementById("board");
+//prompt the user to enter his name and display it on the page
 var thisplayername = prompt("Enter your name:");
 document.querySelector("#player_name").innerHTML = "Logged as: " + thisplayername;
+//establish ws connection to server
 var connection = new WebSocket("ws://localhost:3000?name=" + thisplayername);
 var game;
 var thisplayerturn = false;
+//class to represent monster
 class Monster {
     constructor(player, monsterclass, pos) {
         this.player = player;
@@ -11,13 +15,16 @@ class Monster {
         this.pos = [];
     }
 }
+//handle messages received from server
 connection.onmessage = function (evt) {
     var message = JSON.parse(evt.data);
     console.log(message);
+    // Listen for messages
     switch (message.type) {
         case "ingame":
             game = message.game;
             if (game.players.length != 4) document.querySelector("#game_info").innerHTML = "Waiting for players...";
+//create game players table
             var gameplayers = document.createElement("table");
             gameplayers.className = "gameplayers";
             var gameidrow = gameplayers.insertRow();
@@ -35,6 +42,7 @@ connection.onmessage = function (evt) {
                         break;
                 }
             }
+            //player information
             for (var player = 0; player < 4; player++) {
                 var playerrow = gameplayers.insertRow();
                 for (var cols = 0; cols < 2; cols++) {
@@ -51,6 +59,7 @@ connection.onmessage = function (evt) {
                 }
             }
             document.body.appendChild(gameplayers);
+            //creating the game board
             for (var rows = 0; rows < 10; rows++) {
                 var row = board.insertRow();
                 for (var cols = 0; cols < 10; cols++) {
@@ -61,12 +70,15 @@ connection.onmessage = function (evt) {
                     if (cols == 9) column.classList.add("player2");
                     if (rows == 9) column.classList.add("player3");
                     console.log((game.players.indexOf(thisplayername) + 1));
+                   ///handle drop events
                     column.addEventListener("drop", function (evt) {
                         if (this.classList.contains("droparea")) connection.send(JSON.stringify({ type: "makemove", monsterpos: evt.dataTransfer.getData("monster").split(",").map(pos => Number(pos)), topos: this.getAttribute("pos").split(",").map(pos => Number(pos)) }));
                     });
+                    //allow monsters to be dragged on the board
                     column.addEventListener("dragover", function (evt) {
                         evt.preventDefault();
                     });
+                    //monsters can be placed on the board with a click event
                     if (!column.classList.contains("player" + (game.players.indexOf(thisplayername) + 1))) continue;
                     column.addEventListener("click", function (evt) {
                         if (!thisplayerturn || game.monsterplacedthisturn || game.eliminated.includes(thisplayername) || this.querySelector("monster")) return;
@@ -75,6 +87,7 @@ connection.onmessage = function (evt) {
                     });
                 }
             }
+            //display the turn queue
             if (game.gamestarted == true) {
                 var roundturnsqueuetable = document.createElement("table");
                 roundturnsqueuetable.className = "roundturnsqueuetable";
@@ -93,6 +106,7 @@ connection.onmessage = function (evt) {
                 }
                 else document.querySelector("#game_info").innerHTML = game.turnqueue[game.whosturn] + "'s turn...";
             }
+            ///display the monsters on the board
             game.monsters.forEach(monster => {
                 var monsterelement = document.createElement("monster");
                 console.log(monster.player);
@@ -116,6 +130,7 @@ connection.onmessage = function (evt) {
                     });
                     evt.dataTransfer.setData("monster", evt.target.parentNode.getAttribute("pos"));
                 });
+                //drag end event 
                 monsterelement.addEventListener("dragend", function (evt) {
                     document.querySelectorAll("td.droparea").forEach(td => {
                         td.classList.remove("droparea");
@@ -123,6 +138,7 @@ connection.onmessage = function (evt) {
                 });
             });
             break;
+            //case when a player joins the game
         case "playerjoined":
             console.log(document.querySelectorAll(".gameplayers tr"));
             var playerrow = document.querySelectorAll(".gameplayers tr")[game.players.length + 2];
@@ -164,9 +180,11 @@ connection.onmessage = function (evt) {
             }
             break;
         case "usedname":
+            //alert the user that the name is already used by another player
             alert("Entered name is used by other player, reload page and enter different one.");
             break;
         case "placemonster":
+            //place the monster on the board message
             game.monsters.push(message.monster);
             game.monsterplacedthisturn = true;
             var monsterelement = document.createElement("monster");
@@ -198,6 +216,7 @@ connection.onmessage = function (evt) {
             });
             break;
         case "nextturn":
+            // next turn message
             game.whosturn = message.whosturn;
             game.monsterplacedthisturn = false;
             if (game.turnqueue[game.whosturn] == thisplayername) {
@@ -210,6 +229,7 @@ connection.onmessage = function (evt) {
             }
             break;
         case "nextround":
+            //next round message
             game.monsterplacedthisturn = false;
             game.monsters.forEach(monster => monster.isactive = true);
             console.log(document.querySelectorAll("monster[isactive='false']"));
@@ -241,10 +261,12 @@ connection.onmessage = function (evt) {
             document.querySelectorAll(".gameplayers tr")[game.players.indexOf(message.player) + 2].querySelectorAll("td")[1].innerHTML = "Eliminated";
             break;
         case "gameover":
+            //game over message
             alert("Game over: " + message.result);
             window.location.reload();
             break;
         case "remove":
+            //handle remove monster message
             var deletedmonster = game.monsters.find(monster => monster.pos[0] == message.monsterpos[0] && monster.pos[1] == message.monsterpos[1]);
             game.lifesleft[game.players.indexOf(deletedmonster.player)]--;
             document.querySelectorAll(".gameplayers tr")[game.players.indexOf(deletedmonster.player) + 2].querySelectorAll("td")[1].innerHTML = game.lifesleft[game.players.indexOf(deletedmonster.player)];
@@ -258,7 +280,7 @@ connection.onmessage = function (evt) {
             break;
     }
 }
-
+// join game function
 function joinGame() {
     if (game) {
         alert("You are already in game!");
@@ -267,7 +289,7 @@ function joinGame() {
     var gameid = prompt("Enter game ID:");
     connection.send(JSON.stringify({ type: "joingame", gameid: gameid }));
 }
-
+//end turn function
 function endTurn() {
     connection.send(JSON.stringify({ type: "endturn" }));
 }
