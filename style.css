@@ -1,0 +1,176 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+}
+
+#player_name {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.legend {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+}
+
+.legend-item span {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+}
+
+.vampire {
+    background: red;
+}
+
+.werewolf {
+    background: green;
+}
+
+.ghost {
+    background: blue;
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    background: #333;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #555;
+}
+
+
+table.gameplayers
+{
+	margin-top: 20px;
+	border-collapse: collapse;
+}
+
+table.gameplayers tr
+{
+	border: 1px solid black;
+}
+
+table.gameplayers tr:first-child
+{
+	height: 50px;
+	line-height: 50px;
+	text-align: center;
+	font-weight: bold;
+}
+
+
+table.gameplayers td
+{
+	height: 50px;
+	line-height: 50px;
+	padding-left: 10px;
+}
+
+table.gameplayers td:first-child
+{
+	width: 200px;
+}
+
+table.gameplayers td:not(:first-child)
+{
+	width: 100px;
+}
+
+table.board
+{
+	border-collapse: collapse;
+	border: 2px solid #333;
+	background: #fff;
+}
+
+table.board td
+{
+	height: 50px;
+	width: 50px;
+	border: 1px solid black;
+	position: relative;
+}
+
+.player1 {
+    background: lightblue;
+}
+
+.player2 {
+    background: lightgreen;
+}
+
+.player3 {
+    background: lightcoral;
+}
+
+.player4 {
+    background: lightgoldenrodyellow;
+}
+
+.player1.player2
+{
+	background: linear-gradient(to bottom right, lightblue 50%, lightgreen 50%);
+}
+
+.player1.player4
+{
+	background: linear-gradient(to bottom left, lightblue 50%, lightgoldenrodyellow 50%);
+}
+
+.player3.player4
+{
+	background: linear-gradient(to top left, lightcoral 50%, lightgoldenrodyellow 50%);
+}
+
+.player2.player3
+{
+	background: linear-gradient(to top right, lightcoral 50%, lightgreen 50%);
+}
+
+monster
+{
+	position: absolute;
+	display: grid;
+	place-items: center;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+}
+
+td.droparea
+{
+	background: dimgray !important;
+}
+
+td.droparea > *
+{
+	pointer-events: none;
+	z-index: -1;
+}
+
+[isactive='false']
+{
+	color: darkgray;
+	pointer-events: none;
+}
