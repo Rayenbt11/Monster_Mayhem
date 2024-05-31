@@ -50,7 +50,7 @@ class Game {
         this.turnqueue = [];
         this.eliminated = [];
         this.monsterplacedthisturn = false;
-        this.lifesleft = [1, 1, 1, 1];
+        this.lifesleft = [10, 10, 10, 10];
     }
 
     //method for adding a player to the game
