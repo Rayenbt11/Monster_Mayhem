@@ -7,10 +7,14 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Rayen Bentemessek",
   "license": "ISC",
   "dependencies": {
     "express": "^4.19.2",
     "ws": "^8.17.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rayenbt11/Monster_Mayhem.git"
   }
 }
